@@ -65,6 +65,10 @@ function ResponsiveAppBar() {
         navigate("/authenticate");
     };
 
+    const handleMyProjectsRedirect = () => {
+        navigate("/projects");
+    };
+
     return (
         <AppBar position="static">
             <Container maxWidth="xl">
@@ -117,7 +121,7 @@ function ResponsiveAppBar() {
                         >
                             {pages.map((page) => (
                                 <MenuItem key={page} onClick={handleCloseNavMenu}>
-                                    <Typography textAlign="center">{page}</Typography>
+                                    <Typography textAlign="center" onClick={page === 'My Projects' ? handleMyProjectsRedirect : null}>{page}</Typography>
                                 </MenuItem>
                             ))}
                         </Menu>
@@ -145,7 +149,12 @@ function ResponsiveAppBar() {
                         {pages.map((page) => (
                             <Button
                                 key={page}
-                                onClick={handleCloseNavMenu}
+                                onClick={() => {
+                                    handleCloseNavMenu();
+                                    if (page === 'My Projects') {
+                                        handleMyProjectsRedirect();
+                                    }
+                                }}
                                 sx={{ my: 2, color: 'white', display: 'block' }}
                             >
                                 {page}

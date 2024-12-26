@@ -1,0 +1,65 @@
+.project-list-container {
+    max-width: 80%;
+    margin: 20px auto 0;
+    padding: 20px;
+    border: 2px solid #1a73e8;
+    border-radius: 8px;
+    background-color: #f0f8ff;
+}
+
+.filter-buttons {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+}
+
+.filter-buttons button {
+    margin-right: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #1a73e8;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.filter-buttons button.active,
+.filter-buttons button:hover {
+    background-color: #004aad;
+}
+
+.project-list {
+    display: grid;
+    flex-wrap: wrap;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.add-project-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #1a73e8;
+    color: white;
+    font-size: 30px;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.add-project-btn:hover {
+    background-color: #005bb5;
+}
+
+.plus-icon {
+    font-weight: bold;
+}
