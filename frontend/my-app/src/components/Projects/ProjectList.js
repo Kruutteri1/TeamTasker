@@ -4,8 +4,10 @@ import './ProjectList.css';
 import { getCookie } from "../Token/Token";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 const ProjectList = () => {
+    const navigate = useNavigate();
     const [projects, setProjects] = useState([]);
     const [filter, setFilter] = useState('all');
 
@@ -53,9 +55,12 @@ const ProjectList = () => {
             </div>
             <div className="project-list">
                 {projects.map((project) => (
-                    <ProjectCard key={project.id} project={project} />
+                    <ProjectCard key={project.id} project={project}/>
                 ))}
             </div>
+            <button className="add-project-btn" onClick={() => navigate('/projects/create-new-project')}>
+                <span className="plus-icon">+</span>
+            </button>
         </div>
     );
 };

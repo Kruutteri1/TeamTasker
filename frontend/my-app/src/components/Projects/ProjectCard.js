@@ -1,7 +1,10 @@
 import React from 'react';
 import './ProjectCard.css';
+import { useNavigate } from 'react-router-dom';
 
 const ProjectCard = ({ project }) => {
+    const navigate = useNavigate();
+
     return (
         <div className="project-card">
             <div className="project-title">
@@ -13,7 +16,7 @@ const ProjectCard = ({ project }) => {
             <div className="project-author">
                 Owner: {project.ownerUserName}
             </div>
-            <button className="view-project-btn">
+            <button onClick={() => navigate(`/projects/${project.id}`)} className="view-project-btn">
                 View Project
             </button>
         </div>

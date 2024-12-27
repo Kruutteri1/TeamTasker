@@ -3,10 +3,7 @@ package org.example.teamtasker.controller;
 import org.example.teamtasker.entity.Project;
 import org.example.teamtasker.service.Imp.ProjectServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,5 +20,12 @@ public class ProjectController {
     @GetMapping
     public List<Project> getAllProject(@RequestParam String userId) {
         return projectService.getProjectsByUserId(userId);
+    }
+
+    @PostMapping("/create-new-project")
+    public Project createNewProject(@RequestParam String projectName,
+                                    @RequestParam String description,
+                                    @RequestParam String userId) {
+        return projectService.createNewProject(projectName, description, userId);
     }
 }

@@ -4,6 +4,7 @@ import Home from "./Home";
 import Authenticate from "./components/Register/Authenticate";
 import Registration from "./components/Register/Registration";
 import ProjectList from "./components/Projects/ProjectList";
+import CreateProject from "./components/Projects/CreateProject";
 
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
                     <Route path='/authenticate' element={<Authenticate/>}/>
                     <Route path='/registration' element={<Registration/>}/>
                     <Route path="/projects" element={<ProjectList/>}/>
+                    <Route path="/projects/create-new-project" element={<CreateProject/>}/>
                 </Routes>
             </Router>
     );
