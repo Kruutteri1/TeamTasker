@@ -19,7 +19,7 @@ public class ProjectController {
 
     @GetMapping
     public List<Project> getAllProject(@RequestParam String userId) {
-        return projectService.getProjectsByUserId(userId);
+        return projectService.getAllProjectsByUserId(userId);
     }
 
     @PostMapping("/create-new-project")
@@ -27,5 +27,10 @@ public class ProjectController {
                                     @RequestParam String description,
                                     @RequestParam String userId) {
         return projectService.createNewProject(projectName, description, userId);
+    }
+
+    @GetMapping("/{projectId}")
+    public Project getProjectById(@PathVariable String projectId) {
+        return projectService.getProjectDetailsByProjectId(projectId);
     }
 }

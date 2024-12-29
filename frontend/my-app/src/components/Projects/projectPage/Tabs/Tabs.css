@@ -1,0 +1,98 @@
+.tabs-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.tabs {
+    display: flex;
+    border-bottom: 2px solid #ddd;
+    margin-bottom: 20px;
+}
+
+.tab-button {
+    text-decoration: none; /* Убираем подчёркивание для ссылок */
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    font-size: 16px;
+    color: #555; /* Цвет текста */
+    transition: color 0.3s, border-bottom 0.3s;
+}
+
+.tab-button.active {
+    border-bottom: 2px solid #1a73e8;
+    font-weight: bold;
+    color: #1a73e8;
+}
+
+.tab-button:hover {
+    color: #1a73e8;
+}
+
+.tab-content {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+}
+
+.project-details {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    background-color: #f4f7fc;
+}
+
+.card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    width: 100%;
+    max-width: 800px;
+    margin-top: 20px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.project-title {
+    font-size: 26px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.project-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.content-item {
+    margin-bottom: 20px;
+}
+
+.label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.project-description p, .project-owner p {
+    font-size: 16px;
+    color: #666;
+    line-height: 1.6;
+    background-color: #fafafa;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 0;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+

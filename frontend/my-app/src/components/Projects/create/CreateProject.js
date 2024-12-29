@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./CreateProject.css";
-import {getCookie} from "../Token/Token";
+import {getCookie} from "../../Token/Token";
 import {jwtDecode} from "jwt-decode";
 import {useNavigate} from "react-router-dom";
 
@@ -33,7 +33,7 @@ const CreateProject = () => {
                 },
             });
 
-            if (response.status === 200) {
+            if (response.status === 201) {
                 alert("Project created successfully!");
                 navigate("/projects");
             } else {

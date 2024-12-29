@@ -1,5 +1,6 @@
 package org.example.teamtasker.service.Imp;
 
+import org.bson.types.ObjectId;
 import org.example.teamtasker.entity.Project;
 import org.example.teamtasker.entity.ProjectParticipant;
 import org.example.teamtasker.entity.User;
@@ -30,14 +31,20 @@ public class ProjectServiceImp implements ProjectService {
     }
 
     @Override
-    public List<Project> getProjectsByUserId(String userId) {
-        List<ProjectParticipant> participants = participantRepository.findByUserId(userId);
+    public List<Project> getAllProjectsByUserId(String userId) {
+        ObjectId objectId = new ObjectId(userId);
+
+        List<ProjectParticipant> participants = participantRepository.findByUserId(objectId);
 
         List<String> projectIds = participants.stream()
                 .map(ProjectParticipant::getProjectId)
                 .collect(Collectors.toList());
 
         return projectRepository.findByIdIn(projectIds);
+    }
+
+    public Project getProjectDetailsByProjectId(String projectId) {
+        return projectRepository.findProjectById(projectId);
     }
 
     @Override
