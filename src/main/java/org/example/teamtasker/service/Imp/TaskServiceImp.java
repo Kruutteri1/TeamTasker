@@ -1,5 +1,6 @@
 package org.example.teamtasker.service.Imp;
 
+import org.bson.types.ObjectId;
 import org.example.teamtasker.entity.Task;
 import org.example.teamtasker.repository.TaskRepository;
 import org.example.teamtasker.service.TaskService;
@@ -36,7 +37,8 @@ public class TaskServiceImp implements TaskService {
         if (dueDate == null || dueDate.isEmpty()) throw new IllegalArgumentException("Due date is required");
 
         Task newTask = new Task();
-        newTask.setProjectId(projectId);
+        ObjectId projectObjectId = new ObjectId(projectId);
+        newTask.setProjectId(projectObjectId);
         newTask.setName(name);
         newTask.setDescription(description);
         newTask.setStatus(status);

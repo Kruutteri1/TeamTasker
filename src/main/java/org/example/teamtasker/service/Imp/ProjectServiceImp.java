@@ -9,6 +9,8 @@ import org.example.teamtasker.repository.ProjectRepository;
 import org.example.teamtasker.repository.UserRepository;
 import org.example.teamtasker.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -48,7 +50,7 @@ public class ProjectServiceImp implements ProjectService {
     }
 
     @Override
-    public Project createNewProject(String projectName, String description, String userId) {
+    public ResponseEntity<String> createNewProject(String projectName, String description, String userId) {
         Project newProject = new Project();
         newProject.setName(projectName);
         newProject.setDescription(description);
@@ -59,7 +61,7 @@ public class ProjectServiceImp implements ProjectService {
             User user = userOptional.get();
             newProject.setOwnerUserName(user.getAuthorName());
         } else {
-            throw new RuntimeException("user not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
 
         Project savedProject = projectRepository.save(newProject);
@@ -68,10 +70,11 @@ public class ProjectServiceImp implements ProjectService {
         ProjectParticipant newProjectParticipant = new ProjectParticipant();
 
         newProjectParticipant.setProjectId(projectId);
-        newProjectParticipant.setUserId(userId);
+        ObjectId objectUserId = new ObjectId(userId);
+        newProjectParticipant.setUserId(objectUserId);
         newProjectParticipant.setRole(OWNER);
         participantRepository.save(newProjectParticipant);
 
-        return savedProject;
+        return ResponseEntity.status(HttpStatus.CREATED).body("Project created successfully with ID: " + projectId);
     }
 }

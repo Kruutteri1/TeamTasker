@@ -3,6 +3,7 @@ package org.example.teamtasker.controller;
 import org.example.teamtasker.entity.Project;
 import org.example.teamtasker.service.Imp.ProjectServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,9 +24,9 @@ public class ProjectController {
     }
 
     @PostMapping("/create-new-project")
-    public Project createNewProject(@RequestParam String projectName,
-                                    @RequestParam String description,
-                                    @RequestParam String userId) {
+    public ResponseEntity<String> createNewProject(@RequestParam String projectName,
+                                                   @RequestParam String description,
+                                                   @RequestParam String userId) {
         return projectService.createNewProject(projectName, description, userId);
     }
 
