@@ -1,4 +1,4 @@
-package org.example.teamtasker.service.Imp;
+package org.example.teamtasker.service.Impl;
 
 import org.bson.types.ObjectId;
 import org.example.teamtasker.entity.Project;
@@ -20,13 +20,13 @@ import java.util.stream.Collectors;
 import static org.example.teamtasker.entity.ProjectRole.OWNER;
 
 @Service
-public class ProjectServiceImp implements ProjectService {
+public class ProjectServiceImpl implements ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectParticipantRepository participantRepository;
     private final UserRepository userRepository;
 
     @Autowired
-    public ProjectServiceImp(ProjectRepository projectRepository, ProjectParticipantRepository participantRepository, UserRepository userRepository) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, ProjectParticipantRepository participantRepository, UserRepository userRepository) {
         this.projectRepository = projectRepository;
         this.participantRepository = participantRepository;
         this.userRepository = userRepository;

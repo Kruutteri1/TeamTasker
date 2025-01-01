@@ -11,7 +11,9 @@ public interface ProjectParticipantService {
 
     List<ProjectParticipantDTO> getParticipants(String projectId);
 
+    ResponseEntity<?> addParticipantToProject(String projectId, String email);
+
     ProjectParticipant updateParticipantRole(String participantId, String role);
 
-    ResponseEntity<String> deleteParticipant(String participantId);
+    ResponseEntity<?> deleteParticipant(String participantId);
 }

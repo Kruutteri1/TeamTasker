@@ -16,6 +16,8 @@ import java.util.Optional;
 public interface ProjectParticipantRepository extends MongoRepository<ProjectParticipant, String> {
     Optional<ProjectParticipant> findById(String id);
 
+    Optional<ProjectParticipant> findByUserIdAndProjectId(ObjectId userId, String projectId);
+
     List<ProjectParticipant> findByUserId(ObjectId userId);
 
     @Aggregation(pipeline = {

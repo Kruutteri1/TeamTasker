@@ -1,4 +1,4 @@
-package org.example.teamtasker.service.Imp;
+package org.example.teamtasker.service.Impl;
 
 import org.bson.types.ObjectId;
 import org.example.teamtasker.entity.Task;
@@ -18,12 +18,12 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class TaskServiceImp implements TaskService {
+public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
 
     @Autowired
-    public TaskServiceImp(TaskRepository taskRepository) {
+    public TaskServiceImpl(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
     }
 
