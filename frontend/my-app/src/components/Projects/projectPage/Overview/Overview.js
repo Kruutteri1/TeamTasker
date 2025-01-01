@@ -47,7 +47,6 @@ const Overview = () => {
         return <div>Error: {error}</div>;
     }
 
-
     return (
         <div className="card">
             <h2 className="project-title">{project?.name}</h2>

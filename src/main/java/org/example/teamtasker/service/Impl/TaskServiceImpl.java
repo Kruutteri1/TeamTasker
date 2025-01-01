@@ -1,5 +1,6 @@
-package org.example.teamtasker.service.Imp;
+package org.example.teamtasker.service.Impl;
 
+import org.bson.types.ObjectId;
 import org.example.teamtasker.entity.Task;
 import org.example.teamtasker.repository.TaskRepository;
 import org.example.teamtasker.service.TaskService;
@@ -17,12 +18,12 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class TaskServiceImp implements TaskService {
+public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
 
     @Autowired
-    public TaskServiceImp(TaskRepository taskRepository) {
+    public TaskServiceImpl(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
     }
 
@@ -36,7 +37,8 @@ public class TaskServiceImp implements TaskService {
         if (dueDate == null || dueDate.isEmpty()) throw new IllegalArgumentException("Due date is required");
 
         Task newTask = new Task();
-        newTask.setProjectId(projectId);
+        ObjectId projectObjectId = new ObjectId(projectId);
+        newTask.setProjectId(projectObjectId);
         newTask.setName(name);
         newTask.setDescription(description);
         newTask.setStatus(status);
