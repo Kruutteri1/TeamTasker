@@ -1,7 +1,7 @@
 package org.example.teamtasker.service.Impl;
 
-import org.bson.types.ObjectId;
 import org.example.teamtasker.entity.Task;
+import org.example.teamtasker.repository.ProjectRepository;
 import org.example.teamtasker.repository.TaskRepository;
 import org.example.teamtasker.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,15 +21,17 @@ import java.util.Optional;
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
+    private final ProjectRepository projectRepository;
 
     @Autowired
-    public TaskServiceImpl(TaskRepository taskRepository) {
+    public TaskServiceImpl(TaskRepository taskRepository, ProjectRepository projectRepository) {
         this.taskRepository = taskRepository;
+        this.projectRepository = projectRepository;
     }
 
     @Override
     public List<Task> getTaskList(String projectId) {
-        return taskRepository.findByProjectId(projectId);
+        return taskRepository.findAllTasksByProjectId(projectId);
     }
 
     @Override
@@ -37,8 +39,7 @@ public class TaskServiceImpl implements TaskService {
         if (dueDate == null || dueDate.isEmpty()) throw new IllegalArgumentException("Due date is required");
 
         Task newTask = new Task();
-        ObjectId projectObjectId = new ObjectId(projectId);
-        newTask.setProjectId(projectObjectId);
+        newTask.setProjectId(projectId);
         newTask.setName(name);
         newTask.setDescription(description);
         newTask.setStatus(status);
@@ -61,6 +62,10 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Task updateTask(String taskId, String projectId, String name, String description, String status, String assignedTo, String dueDate) {
         if (taskRepository.findTaskById(taskId).isEmpty()) throw new RuntimeException("Task with: " + taskId + " id not found");
+
+        Task updatedTask = new Task();
+
+
 
 
         return null;
