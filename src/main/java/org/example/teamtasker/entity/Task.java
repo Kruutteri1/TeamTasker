@@ -22,9 +22,11 @@ public class Task {
     private String name;
     private String description;
 
-    private String status;    // Статус задачи (например: "todo", "in_progress", "done")
-    private String assignedTo; // ID пользователя, назначенного на задачу (может быть null, если никто не назначен)
+    private String status;    // Task status (example: "todo", "in_progress", "done")
+    private String assignedTo; // ID of the user assigned to the task (can be null if no one is assigned)
 
-    private LocalDateTime createdAt; // Дата создания
-    private LocalDateTime dueDate;   // Срок выполнения (опционально)
+    private LocalDateTime createdAt; // Date of Creation
+    private LocalDateTime dueDate;   // (optional)
+
+    private LocalDateTime lastUpdated;
 }

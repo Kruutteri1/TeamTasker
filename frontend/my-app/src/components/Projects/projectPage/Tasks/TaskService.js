@@ -11,7 +11,7 @@ const getTasks = async (projectId, token) => {
 };
 
 const deleteTask = async (taskId, token) => {
-    return axios.delete(`${BASE_URL}/${taskId}`, {
+    return axios.delete(`${BASE_URL}/delete/${taskId}`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
