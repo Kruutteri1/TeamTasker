@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface TaskRepository extends MongoRepository<Task, String> {
-    List<Task> findByProjectId(String projectId);
+    List<Task> findAllTasksByProjectId(String projectId);
 
     Optional<Task> findTaskById(String taskId);
 

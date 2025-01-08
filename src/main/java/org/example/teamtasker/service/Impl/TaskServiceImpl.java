@@ -1,6 +1,5 @@
 package org.example.teamtasker.service.Impl;
 
-import org.bson.types.ObjectId;
 import org.example.teamtasker.entity.Task;
 import org.example.teamtasker.repository.TaskRepository;
 import org.example.teamtasker.service.TaskService;
@@ -29,19 +28,18 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<Task> getTaskList(String projectId) {
-        return taskRepository.findByProjectId(projectId);
+        return taskRepository.findAllTasksByProjectId(projectId);
     }
 
     @Override
-    public Task createTask(String projectId, String name, String description, String status, String assignedTo, String dueDate) {
+    public Task createTask(String projectId, String name, String description, String assignedTo, String dueDate) {
         if (dueDate == null || dueDate.isEmpty()) throw new IllegalArgumentException("Due date is required");
 
         Task newTask = new Task();
-        ObjectId projectObjectId = new ObjectId(projectId);
-        newTask.setProjectId(projectObjectId);
+        newTask.setProjectId(projectId);
         newTask.setName(name);
         newTask.setDescription(description);
-        newTask.setStatus(status);
+        newTask.setStatus("todo");
         newTask.setAssignedTo(assignedTo);
 
         LocalDateTime createdAt = LocalDateTime.now();
@@ -59,11 +57,38 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task updateTask(String taskId, String projectId, String name, String description, String status, String assignedTo, String dueDate) {
-        if (taskRepository.findTaskById(taskId).isEmpty()) throw new RuntimeException("Task with: " + taskId + " id not found");
+    public Task updateTask(String taskId, String name, String description, String status, String assignedTo, String dueDate) {
+        Task existingTask = taskRepository.findTaskById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task with id: " + taskId + " not found"));
 
+        if (name != null && !name.isEmpty()) {
+            existingTask.setName(name);
+        }
 
-        return null;
+        if (description != null && !description.isEmpty()) {
+            existingTask.setDescription(description);
+        }
+
+        if (status != null && !status.isEmpty()) {
+            existingTask.setStatus(status);
+        }
+
+        if (assignedTo != null && !assignedTo.isEmpty()) {
+            existingTask.setAssignedTo(assignedTo);
+        }
+
+        if (dueDate != null && !dueDate.isEmpty()) {
+            try {
+                DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                LocalDateTime parsedDueDateTime = LocalDateTime.parse(dueDate, dateFormatter);
+                existingTask.setDueDate(parsedDueDateTime);
+            } catch (DateTimeParseException e) {
+                throw new IllegalArgumentException("Invalid due date format. Expected format: yyyy-MM-dd HH:mm");
+            }
+        }
+
+        existingTask.setLastUpdated(LocalDateTime.now());
+        return taskRepository.save(existingTask);
     }
 
     @Override
