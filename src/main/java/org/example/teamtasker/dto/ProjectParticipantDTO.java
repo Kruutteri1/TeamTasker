@@ -1,10 +1,8 @@
 package org.example.teamtasker.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class ProjectParticipantDTO {
     private String id;
     private String userName;

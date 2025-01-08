@@ -1,7 +1,6 @@
 package org.example.teamtasker.service.Impl;
 
 import org.example.teamtasker.entity.Task;
-import org.example.teamtasker.repository.ProjectRepository;
 import org.example.teamtasker.repository.TaskRepository;
 import org.example.teamtasker.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +20,10 @@ import java.util.Optional;
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
-    private final ProjectRepository projectRepository;
 
     @Autowired
-    public TaskServiceImpl(TaskRepository taskRepository, ProjectRepository projectRepository) {
+    public TaskServiceImpl(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
-        this.projectRepository = projectRepository;
     }
 
     @Override
@@ -35,14 +32,14 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task createTask(String projectId, String name, String description, String status, String assignedTo, String dueDate) {
+    public Task createTask(String projectId, String name, String description, String assignedTo, String dueDate) {
         if (dueDate == null || dueDate.isEmpty()) throw new IllegalArgumentException("Due date is required");
 
         Task newTask = new Task();
         newTask.setProjectId(projectId);
         newTask.setName(name);
         newTask.setDescription(description);
-        newTask.setStatus(status);
+        newTask.setStatus("todo");
         newTask.setAssignedTo(assignedTo);
 
         LocalDateTime createdAt = LocalDateTime.now();
@@ -60,15 +57,38 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task updateTask(String taskId, String projectId, String name, String description, String status, String assignedTo, String dueDate) {
-        if (taskRepository.findTaskById(taskId).isEmpty()) throw new RuntimeException("Task with: " + taskId + " id not found");
+    public Task updateTask(String taskId, String name, String description, String status, String assignedTo, String dueDate) {
+        Task existingTask = taskRepository.findTaskById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task with id: " + taskId + " not found"));
 
-        Task updatedTask = new Task();
+        if (name != null && !name.isEmpty()) {
+            existingTask.setName(name);
+        }
 
+        if (description != null && !description.isEmpty()) {
+            existingTask.setDescription(description);
+        }
 
+        if (status != null && !status.isEmpty()) {
+            existingTask.setStatus(status);
+        }
 
+        if (assignedTo != null && !assignedTo.isEmpty()) {
+            existingTask.setAssignedTo(assignedTo);
+        }
 
-        return null;
+        if (dueDate != null && !dueDate.isEmpty()) {
+            try {
+                DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                LocalDateTime parsedDueDateTime = LocalDateTime.parse(dueDate, dateFormatter);
+                existingTask.setDueDate(parsedDueDateTime);
+            } catch (DateTimeParseException e) {
+                throw new IllegalArgumentException("Invalid due date format. Expected format: yyyy-MM-dd HH:mm");
+            }
+        }
+
+        existingTask.setLastUpdated(LocalDateTime.now());
+        return taskRepository.save(existingTask);
     }
 
     @Override
