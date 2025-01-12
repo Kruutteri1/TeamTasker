@@ -1,11 +1,16 @@
 package org.example.teamtasker.service.Impl;
 
+import io.micrometer.common.util.StringUtils;
 import org.example.teamtasker.entity.Task;
+import org.example.teamtasker.entity.User;
+import org.example.teamtasker.repository.ProjectParticipantRepository;
 import org.example.teamtasker.repository.TaskRepository;
+import org.example.teamtasker.repository.UserRepository;
 import org.example.teamtasker.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,10 +25,14 @@ import java.util.Optional;
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
+    private final ProjectParticipantRepository participantRepository;
 
     @Autowired
-    public TaskServiceImpl(TaskRepository taskRepository) {
+    public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository, ProjectParticipantRepository participantRepository) {
         this.taskRepository = taskRepository;
+        this.userRepository = userRepository;
+        this.participantRepository = participantRepository;
     }
 
     @Override
@@ -33,7 +42,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Task createTask(String projectId, String name, String description, String assignedTo, String dueDate) {
-        if (dueDate == null || dueDate.isEmpty()) throw new IllegalArgumentException("Due date is required");
+        if (StringUtils.isNotBlank(dueDate)) throw new IllegalArgumentException("Due date is required");
 
         Task newTask = new Task();
         newTask.setProjectId(projectId);
@@ -61,23 +70,31 @@ public class TaskServiceImpl implements TaskService {
         Task existingTask = taskRepository.findTaskById(taskId)
                 .orElseThrow(() -> new RuntimeException("Task with id: " + taskId + " not found"));
 
-        if (name != null && !name.isEmpty()) {
+        if (StringUtils.isNotBlank(name)) {
             existingTask.setName(name);
         }
 
-        if (description != null && !description.isEmpty()) {
+        if (StringUtils.isNotBlank(description)) {
             existingTask.setDescription(description);
         }
 
-        if (status != null && !status.isEmpty()) {
+        if (StringUtils.isNotBlank(status)) {
             existingTask.setStatus(status);
         }
 
-        if (assignedTo != null && !assignedTo.isEmpty()) {
-            existingTask.setAssignedTo(assignedTo);
+        if (StringUtils.isNotBlank(assignedTo)) {
+            String userId = participantRepository.findById(assignedTo)
+                    .map(participant -> String.valueOf(participant.getUserId()))
+                    .orElseThrow(() -> new UsernameNotFoundException("Project participant not found for ID: " + assignedTo));
+
+            String authorName = userRepository.findById(userId)
+                    .map(User::getAuthorName)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found for User ID: " + userId));
+
+            existingTask.setAssignedTo(authorName);
         }
 
-        if (dueDate != null && !dueDate.isEmpty()) {
+        if (StringUtils.isNotBlank(dueDate)) {
             try {
                 DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
                 LocalDateTime parsedDueDateTime = LocalDateTime.parse(dueDate, dateFormatter);

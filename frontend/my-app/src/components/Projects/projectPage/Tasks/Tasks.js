@@ -1,52 +1,101 @@
 import React, { useEffect, useState } from 'react';
 import { getCookie } from "../../../Token/Token";
-import { useParams, useNavigate } from "react-router-dom";
-import { getTasks, deleteTask } from "./TaskService";
-import { Grid, Card, CardContent, Typography, CircularProgress, Chip, Tooltip, Button } from '@mui/material';
-import { CheckCircle, HourglassEmpty, ErrorOutline, Edit, Delete } from '@mui/icons-material';
-import useStyles from './Tasks.styles';
+import { useParams } from "react-router-dom";
+import {getTasks, deleteTask, updateTask} from "./TaskService";
+import { getParticipants } from "../Participants/ParticipantService";
+import { Grid, Typography, CircularProgress } from '@mui/material';
+import TaskCard from "./TaskCard";
+import TaskEditForm from "./TaskEditForm";
+import { format } from 'date-fns';
 
 const Tasks = () => {
-    const classes = useStyles();
     const [tasks, setTasks] = useState([]);
+    const [participants, setParticipants] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { projectId } = useParams();
-    const navigate = useNavigate();
 
     const jwtToken = getCookie('jwtToken');
     const actualToken = JSON.parse(jwtToken);
 
     useEffect(() => {
-        const fetchTasks = async () => {
+        const fetchTasksAndParticipants = async () => {
             try {
-                const response = await getTasks(projectId, actualToken);
-                if (response.status === 200) {
-                    setTasks(response.data);
-                    console.log('Tasks fetched:', response.data);
+                const [tasksResponse, participantsResponse] = await Promise.all([
+                    getTasks(projectId, actualToken),
+                    getParticipants(projectId, actualToken)
+                ]);
+
+                if (tasksResponse.status === 200) {
+                    setTasks(tasksResponse.data);
                 } else {
                     setError('Error fetching tasks');
                 }
+
+                if (participantsResponse.status === 200) {
+                    setParticipants(participantsResponse.data);
+                } else {
+                    setError('Error fetching participants');
+                }
             } catch (error) {
-                setError('An error occurred while fetching tasks');
+                setError('An error occurred while fetching data');
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchTasks();
+        fetchTasksAndParticipants();
     }, [projectId, actualToken]);
 
-    const getStatusChip = (status) => {
-        switch (status) {
-            case 'done':
-                return <Chip icon={<CheckCircle />} label="Done" className={`${classes.statusChip} ${classes.done}`} />;
-            case 'in_progress':
-                return <Chip icon={<HourglassEmpty />} label="In Progress" className={`${classes.statusChip} ${classes.inProgress}`} />;
-            case 'todo':
-            default:
-                return <Chip icon={<ErrorOutline />} label="To Do" className={`${classes.statusChip} ${classes.todo}`} />;
+    const [editTask, setEditTask] = useState(null);
+
+    const handleEdit = (task) => {
+        const assignedParticipant = participants.find(
+            participant => participant.userName === task.assignedTo
+        );
+
+        setEditTask({
+            ...task,
+            assignedTo: assignedParticipant ? assignedParticipant.id : task.assignedTo
+        });
+    };
+
+    const handleCancelEdit = () => {
+        setEditTask(null);
+    };
+
+    const handleSaveEdit = async () => {
+        try {
+            const formattedDueDate = format(new Date(editTask.dueDate), 'yyyy-MM-dd HH:mm');
+
+            const updateTaskRequest = {
+                name: editTask.name,
+                description: editTask.description,
+                assignedTo: editTask.assignedTo,
+                dueDate: formattedDueDate,
+                status: editTask.status,
+            };
+
+            const response = await updateTask(editTask.id, updateTaskRequest, actualToken);
+
+            if (response.status === 200) {
+                setTasks(tasks.map(task =>
+                    task.id === editTask.id ? response.data : task
+                ));
+                setEditTask(null);
+                alert('Task updated successfully');
+            } else {
+                alert('Failed to update the task');
+            }
+        } catch (error) {
+            console.error('Error saving task:', error);
+            alert('An error occurred while saving the task');
         }
+    };
+
+    const handleInputChange = (field, value) => {
+        console.log(field, value);
+        setEditTask({ ...editTask, [field]: value });
     };
 
     const handleDelete = async (taskId) => {
@@ -64,10 +113,6 @@ const Tasks = () => {
         }
     };
 
-    const handleEdit = (taskId) => {
-        navigate(`/edit-task/${taskId}`);
-    };
-
     if (loading) return <CircularProgress />;
     if (error) return <Typography color="error">{error}</Typography>;
 
@@ -75,41 +120,21 @@ const Tasks = () => {
         <Grid container spacing={3}>
             {tasks.map(task => (
                 <Grid item xs={12} sm={6} md={4} key={task.id}>
-                    <Card className={classes.card}>
-                        <CardContent>
-                            <Typography variant="h6" gutterBottom>{task.name}</Typography>
-                            <Typography variant="body2" color="textSecondary">{task.description || 'No description'}</Typography>
-                            <Typography variant="body2" color="textSecondary">Assigned To: {task.assignedTo || 'Unassigned'}</Typography>
-                            <Tooltip title={`Created At: ${new Date(task.createdAt).toLocaleString()}`}>
-                                <Typography variant="body2" color="textSecondary">Due Date: {task.dueDate ? new Date(task.dueDate).toLocaleString() : 'No due date'}</Typography>
-                            </Tooltip>
-
-                            <Grid container alignItems="center" justifyContent="space-between">
-                                <Grid item>
-                                    {getStatusChip(task.status)}
-                                </Grid>
-
-                                <Grid item>
-                                    <Button
-                                        startIcon={<Edit />}
-                                        variant="outlined"
-                                        color="primary"
-                                        onClick={() => handleEdit(task.id)}
-                                        sx={{ marginTop: '10px' }}>
-                                        Edit
-                                    </Button>
-                                    <Button
-                                        startIcon={<Delete />}
-                                        variant="outlined"
-                                        color="secondary"
-                                        onClick={() => handleDelete(task.id)}
-                                        sx={{ marginTop: '10px', marginLeft: '10px' }}>
-                                        Delete
-                                    </Button>
-                                </Grid>
-                            </Grid>
-                        </CardContent>
-                    </Card>
+                    {editTask && editTask.id === task.id ? (
+                        <TaskEditForm
+                            editTask={editTask}
+                            participants={participants}
+                            onSave={handleSaveEdit}
+                            onCancel={handleCancelEdit}
+                            onChange={handleInputChange}
+                        />
+                    ) : (
+                        <TaskCard
+                            task={task}
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
+                        />
+                    )}
                 </Grid>
             ))}
         </Grid>
