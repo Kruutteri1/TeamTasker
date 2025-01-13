@@ -18,6 +18,7 @@ public class CreateTaskRequestDTO {
 
     private String assignedTo;
 
+    @NotBlank(message = "Due Date is required")
     @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2}(\\.\\d{1,3})?)?Z?", message = "Invalid ISO 8601 format")
     private String dueDate;
 }
