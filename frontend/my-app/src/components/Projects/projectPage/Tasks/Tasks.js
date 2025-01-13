@@ -1,19 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { getCookie } from "../../../Token/Token";
-import { useParams } from "react-router-dom";
-import {getTasks, deleteTask, updateTask} from "./TaskService";
-import { getParticipants } from "../Participants/ParticipantService";
-import { Grid, Typography, CircularProgress } from '@mui/material';
+import React, {useEffect, useState} from 'react';
+import {getCookie} from "../../../Token/Token";
+import {useParams} from "react-router-dom";
+import {getTasks, deleteTask, updateTask, createTask} from "./TaskService";
+import {getParticipants} from "../Participants/ParticipantService";
+import {Grid, Typography, CircularProgress} from '@mui/material';
 import TaskCard from "./TaskCard";
 import TaskEditForm from "./TaskEditForm";
-import { format } from 'date-fns';
+import {format} from 'date-fns';
+import TaskCreateForm from "./TaskAddForm";
 
 const Tasks = () => {
     const [tasks, setTasks] = useState([]);
     const [participants, setParticipants] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { projectId } = useParams();
+    const {projectId} = useParams();
 
     const jwtToken = getCookie('jwtToken');
     const actualToken = JSON.parse(jwtToken);
@@ -93,9 +94,18 @@ const Tasks = () => {
         }
     };
 
+    const handleSaveNewTask = async (taskData) => {
+        console.log(taskData);
+        const response = await createTask(taskData, actualToken);
+        if (response.status === 200) {
+            setTasks([...tasks, response.data]);
+        } else {
+            alert('Failed to create task');
+        }
+    };
+
     const handleInputChange = (field, value) => {
-        console.log(field, value);
-        setEditTask({ ...editTask, [field]: value });
+        setEditTask({...editTask, [field]: value});
     };
 
     const handleDelete = async (taskId) => {
@@ -113,7 +123,7 @@ const Tasks = () => {
         }
     };
 
-    if (loading) return <CircularProgress />;
+    if (loading) return <CircularProgress/>;
     if (error) return <Typography color="error">{error}</Typography>;
 
     return (
@@ -137,6 +147,11 @@ const Tasks = () => {
                     )}
                 </Grid>
             ))}
+            <TaskCreateForm
+                participants={participants}
+                projectId={projectId}
+                onSave={handleSaveNewTask}
+            />
         </Grid>
     );
 };

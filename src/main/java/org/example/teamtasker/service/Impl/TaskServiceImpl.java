@@ -42,14 +42,17 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Task createTask(String projectId, String name, String description, String assignedTo, String dueDate) {
-        if (StringUtils.isNotBlank(dueDate)) throw new IllegalArgumentException("Due date is required");
-
         Task newTask = new Task();
         newTask.setProjectId(projectId);
         newTask.setName(name);
         newTask.setDescription(description);
         newTask.setStatus("todo");
-        newTask.setAssignedTo(assignedTo);
+
+        if (StringUtils.isBlank(assignedTo)) {
+            newTask.setAssignedTo("Unassigned");
+        } else {
+            newTask.setAssignedTo(assignedTo);
+        }
 
         LocalDateTime createdAt = LocalDateTime.now();
         newTask.setCreatedAt(createdAt);

@@ -18,6 +18,14 @@ const updateTask = async (taskId, updateTaskRequest, token) => {
     });
 }
 
+const createTask = async (newTask, token) => {
+    return await axios.post(`${BASE_URL}/create-new-task`, newTask, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+
 const deleteTask = async (taskId, token) => {
     return axios.delete(`${BASE_URL}/delete/${taskId}`, {
         headers: {
@@ -26,4 +34,4 @@ const deleteTask = async (taskId, token) => {
     });
 };
 
-export { getTasks, updateTask, deleteTask };
+export { getTasks, updateTask, createTask, deleteTask };
